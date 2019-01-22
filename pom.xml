@@ -258,6 +258,14 @@
 			<artifactId>jetty-plus</artifactId>
 			<version>9.4.8.v20171121</version>
 		</dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.alibaba.citrus/citrus-webx-all -->
+        <dependency>
+            <groupId>com.alibaba.citrus</groupId>
+            <artifactId>citrus-webx-all</artifactId>
+            <version>3.2.4</version>
+        </dependency>
+
 	</dependencies>
 
 	<build>

