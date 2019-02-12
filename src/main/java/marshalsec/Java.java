@@ -23,20 +23,19 @@ SOFTWARE.
 package marshalsec;
 
 
+import marshalsec.gadgets.CommonsBeanutils;
+import marshalsec.gadgets.JDKUtil;
+import marshalsec.gadgets.XBean;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Comparator;
 
-import marshalsec.gadgets.CommonsBeanutils;
-import marshalsec.gadgets.JDKUtil;
-import marshalsec.gadgets.XBean;
-
 
 /**
  * @author mbechler
- *
  */
 public class Java extends MarshallerBase<byte[]> implements CommonsBeanutils, XBean {
 
@@ -46,9 +45,9 @@ public class Java extends MarshallerBase<byte[]> implements CommonsBeanutils, XB
      * @see marshalsec.MarshallerBase#marshal(java.lang.Object)
      */
     @Override
-    public byte[] marshal ( Object o ) throws Exception {
+    public byte[] marshal(Object o) throws Exception {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try ( ObjectOutputStream oos = new ObjectOutputStream(bos) ) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(bos)) {
             oos.writeObject(o);
         }
         return bos.toByteArray();
@@ -61,9 +60,9 @@ public class Java extends MarshallerBase<byte[]> implements CommonsBeanutils, XB
      * @see marshalsec.MarshallerBase#unmarshal(java.lang.Object)
      */
     @Override
-    public Object unmarshal ( byte[] data ) throws Exception {
+    public Object unmarshal(byte[] data) throws Exception {
         ByteArrayInputStream bis = new ByteArrayInputStream(data);
-        try ( ObjectInputStream ois = new ObjectInputStream(bis) ) {
+        try (ObjectInputStream ois = new ObjectInputStream(bis)) {
             return ois.readObject();
         }
     }
@@ -75,12 +74,12 @@ public class Java extends MarshallerBase<byte[]> implements CommonsBeanutils, XB
      * @see marshalsec.UtilFactory#makeComparatorTrigger(java.lang.Object, java.util.Comparator)
      */
     @Override
-    public Object makeComparatorTrigger ( Object tgt, Comparator<?> cmp ) throws Exception {
+    public Object makeComparatorTrigger(Object tgt, Comparator<?> cmp) throws Exception {
         return JDKUtil.makePriorityQueue(tgt, cmp);
     }
 
 
-    public static void main ( String[] args ) {
+    public static void main(String[] args) {
         new Java().run(args);
     }
 }

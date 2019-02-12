@@ -23,23 +23,18 @@ SOFTWARE.
 package marshalsec;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-
 import com.alibaba.citrus.hessian.io.*;
 
 
 /**
  * @author mbechler
- *
  */
 public class Hessian extends HessianBase {
 
 
-
     @Override
     protected Hessian2Output createOutput(com.alibaba.citrus.util.io.ByteArrayOutputStream bos) {
-         return new Hessian2Output(bos);
+        return new Hessian2Output(bos);
     }
 
     @Override
@@ -48,8 +43,7 @@ public class Hessian extends HessianBase {
     }
 
 
-
-    public static void main ( String[] args ) {
+    public static void main(String[] args) {
         new Hessian().run(args);
     }
 

@@ -32,7 +32,6 @@ import flex.messaging.io.amf.Amf3Output;
 
 /**
  * @author mbechler
- *
  */
 public class BlazeDSAMF3 extends BlazeDSExternalizableBase {
 
@@ -42,7 +41,7 @@ public class BlazeDSAMF3 extends BlazeDSExternalizableBase {
      * @see marshalsec.AbstractBlazeDSBase#createOutput(flex.messaging.io.SerializationContext)
      */
     @Override
-    protected AbstractAmfOutput createOutput ( SerializationContext sc ) {
+    protected AbstractAmfOutput createOutput(SerializationContext sc) {
         return new Amf3Output(sc);
     }
 
@@ -53,12 +52,12 @@ public class BlazeDSAMF3 extends BlazeDSExternalizableBase {
      * @see marshalsec.AbstractBlazeDSBase#createInput(flex.messaging.io.SerializationContext)
      */
     @Override
-    protected AbstractAmfInput createInput ( SerializationContext sc ) {
+    protected AbstractAmfInput createInput(SerializationContext sc) {
         return new Amf3Input(sc);
     }
 
 
-    public static void main ( String[] args ) {
+    public static void main(String[] args) {
         new BlazeDSAMF3().run(args);
     }
 }

@@ -30,9 +30,7 @@ import java.util.Set;
 
 
 /**
- * 
  * @author mbechler
- *
  */
 public class TestingSecurityManager extends SecurityManager {
 
@@ -46,7 +44,7 @@ public class TestingSecurityManager extends SecurityManager {
      * @see java.lang.SecurityManager#checkExec(java.lang.String)
      */
     @Override
-    public void checkExec ( String cmd ) {
+    public void checkExec(String cmd) {
         this.executed = cmd;
         throw new java.lang.SecurityException("Not calling executable " + cmd);
     }
@@ -58,17 +56,17 @@ public class TestingSecurityManager extends SecurityManager {
      * @see java.lang.SecurityManager#checkPermission(java.security.Permission)
      */
     @Override
-    public void checkPermission ( Permission perm ) {
+    public void checkPermission(Permission perm) {
 
-        if ( perm instanceof RuntimePermission ) {
+        if (perm instanceof RuntimePermission) {
             return;
         }
 
         Set<URL> cbs = new HashSet<>();
-        for ( Class<?> cl : getClassContext() ) {
-            if ( cl.getProtectionDomain() != null && cl.getProtectionDomain().getCodeSource() != null
+        for (Class<?> cl : getClassContext()) {
+            if (cl.getProtectionDomain() != null && cl.getProtectionDomain().getCodeSource() != null
                     && cl.getProtectionDomain().getCodeSource().getLocation() != null
-                    && !"file".equals(cl.getProtectionDomain().getCodeSource().getLocation().getProtocol()) ) {
+                    && !"file".equals(cl.getProtectionDomain().getCodeSource().getLocation().getProtocol())) {
                 cbs.add(cl.getProtectionDomain().getCodeSource().getLocation());
             }
         }
@@ -77,14 +75,14 @@ public class TestingSecurityManager extends SecurityManager {
     }
 
 
-    public void assertRCE () throws Exception {
+    public void assertRCE() throws Exception {
 
-        if ( this.executed != null ) {
+        if (this.executed != null) {
             System.err.println("Had execution of " + this.executed);
             return;
         }
 
-        if ( !this.remoteCodebases.isEmpty() ) {
+        if (!this.remoteCodebases.isEmpty()) {
             System.err.println("Had execution from " + this.remoteCodebases);
             return;
         }

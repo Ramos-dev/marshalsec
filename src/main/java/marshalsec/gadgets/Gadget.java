@@ -25,7 +25,6 @@ package marshalsec.gadgets;
 
 /**
  * @author mbechler
- *
  */
 public interface Gadget {
 

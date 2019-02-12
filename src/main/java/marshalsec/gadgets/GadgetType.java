@@ -35,6 +35,7 @@ public enum GadgetType {
     SpringPropertyPathFactory(SpringPropertyPathFactory.class),
     SpringPartiallyComparableAdvisorHolder(SpringPartiallyComparableAdvisorHolder.class),
     SpringAbstractBeanFactoryPointcutAdvisor(SpringAbstractBeanFactoryPointcutAdvisor.class),
+    SpringAbstractBeanFactoryPointcutAdvisor2(SpringAbstractBeanFactoryPointcutAdvisor2.class),
     Rome(Rome.class),
     XBean(XBean.class),
     Resin(Resin.class),

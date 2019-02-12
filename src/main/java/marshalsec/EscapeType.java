@@ -25,7 +25,6 @@ package marshalsec;
 
 /**
  * @author mbechler
- *
  */
 public enum EscapeType {
 

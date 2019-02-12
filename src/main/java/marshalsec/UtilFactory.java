@@ -23,42 +23,41 @@ SOFTWARE.
 package marshalsec;
 
 
-import java.util.Comparator;
-
 import marshalsec.gadgets.JDKUtil;
 import marshalsec.gadgets.ToStringUtil;
+
+import java.util.Comparator;
 
 
 /**
  * @author mbechler
- *
  */
 public interface UtilFactory {
 
-    default Object makeHashCodeTrigger ( Object o1 ) throws Exception {
+    default Object makeHashCodeTrigger(Object o1) throws Exception {
         return JDKUtil.makeMap(o1, o1);
     }
 
 
-    default Object makeEqualsTrigger ( Object tgt, Object sameHash ) throws Exception {
+    default Object makeEqualsTrigger(Object tgt, Object sameHash) throws Exception {
         return JDKUtil.makeMap(tgt, sameHash);
     }
 
 
-    Object makeToStringTriggerUnstable ( Object obj ) throws Exception;
+    Object makeToStringTriggerUnstable(Object obj) throws Exception;
 
 
-    default Object makeToStringTriggerStable ( Object obj ) throws Exception {
+    default Object makeToStringTriggerStable(Object obj) throws Exception {
         return ToStringUtil.makeToStringTrigger(obj);
     }
 
 
-    default Object makeIteratorTrigger ( Object it ) throws Exception {
+    default Object makeIteratorTrigger(Object it) throws Exception {
         return JDKUtil.makeIteratorTriggerNative(this, it);
     }
 
 
-    default Object makeComparatorTrigger ( Object tgt, Comparator<?> cmp ) throws Exception {
+    default Object makeComparatorTrigger(Object tgt, Comparator<?> cmp) throws Exception {
         return JDKUtil.makeTreeMap(tgt, cmp);
     }
 }

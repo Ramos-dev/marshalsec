@@ -23,31 +23,29 @@ SOFTWARE.
 package marshalsec.gadgets;
 
 
-import javax.naming.Context;
-import javax.naming.Reference;
-
-import org.apache.xbean.naming.context.ContextUtil.ReadOnlyBinding;
-import org.apache.xbean.naming.context.WritableContext;
-
 import marshalsec.MarshallerBase;
 import marshalsec.UtilFactory;
 import marshalsec.util.Reflections;
+import org.apache.xbean.naming.context.ContextUtil.ReadOnlyBinding;
+import org.apache.xbean.naming.context.WritableContext;
+
+import javax.naming.Context;
+import javax.naming.Reference;
 
 
 /**
  * @author mbechler
- *
  */
 public interface XBean extends Gadget {
 
-    @Args ( minArgs = 2, args = {
-        "codebase", "classname"
+    @Args(minArgs = 2, args = {
+            "codebase", "classname"
     }, defaultArgs = {
-        MarshallerBase.defaultCodebase, MarshallerBase.defaultCodebaseClass
-    } )
-    default Object makeXBean ( UtilFactory uf, String[] args ) throws Exception {
+            MarshallerBase.defaultCodebase, MarshallerBase.defaultCodebaseClass
+    })
+    default Object makeXBean(UtilFactory uf, String[] args) throws Exception {
         Context ctx = Reflections.createWithoutConstructor(WritableContext.class);
-        Reference ref = new Reference("foo", args[ 1 ], args[ 0 ]);
+        Reference ref = new Reference("foo", args[1], args[0]);
         ReadOnlyBinding binding = new ReadOnlyBinding("foo", ref, ctx);
         return uf.makeToStringTriggerUnstable(binding); // $NON-NLS-1$
     }

@@ -23,22 +23,19 @@ SOFTWARE.
 package marshalsec;
 
 
-import java.io.ByteArrayOutputStream;
-
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-
 import marshalsec.gadgets.CommonsBeanutils;
 import marshalsec.gadgets.SpringAbstractBeanFactoryPointcutAdvisor;
 
+import java.io.ByteArrayOutputStream;
+
 
 /**
- * 
  * Not applicable:
  * - Most, as public default constructor is required, see {@link KryoAltStrategy}.
- * 
- * @author mbechler
  *
+ * @author mbechler
  */
 public class Kryo extends MarshallerBase<byte[]> implements SpringAbstractBeanFactoryPointcutAdvisor, CommonsBeanutils {
 
@@ -48,10 +45,10 @@ public class Kryo extends MarshallerBase<byte[]> implements SpringAbstractBeanFa
      * @see marshalsec.MarshallerBase#marshal(java.lang.Object)
      */
     @Override
-    public byte[] marshal ( Object o ) throws Exception {
+    public byte[] marshal(Object o) throws Exception {
         com.esotericsoftware.kryo.Kryo k = makeKryo();
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try ( Output output = new Output(bos) ) {
+        try (Output output = new Output(bos)) {
             k.writeClassAndObject(output, o);
         }
         return bos.toByteArray();
@@ -64,20 +61,20 @@ public class Kryo extends MarshallerBase<byte[]> implements SpringAbstractBeanFa
      * @see marshalsec.MarshallerBase#unmarshal(java.lang.Object)
      */
     @Override
-    public Object unmarshal ( byte[] data ) throws Exception {
+    public Object unmarshal(byte[] data) throws Exception {
         com.esotericsoftware.kryo.Kryo k = makeKryo();
-        try ( Input in = new Input(data) ) {
+        try (Input in = new Input(data)) {
             return k.readClassAndObject(in);
         }
     }
 
 
-    protected com.esotericsoftware.kryo.Kryo makeKryo () {
+    protected com.esotericsoftware.kryo.Kryo makeKryo() {
         return new com.esotericsoftware.kryo.Kryo();
     }
 
 
-    public static void main ( String[] args ) {
+    public static void main(String[] args) {
         new Kryo().run(args);
     }
 }

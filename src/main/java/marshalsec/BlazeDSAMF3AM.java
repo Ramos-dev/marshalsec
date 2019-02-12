@@ -23,24 +23,18 @@ SOFTWARE.
 package marshalsec;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-
 import flex.messaging.io.MessageIOConstants;
 import flex.messaging.io.SerializationContext;
-import flex.messaging.io.amf.ActionContext;
-import flex.messaging.io.amf.ActionMessage;
-import flex.messaging.io.amf.AmfMessageDeserializer;
-import flex.messaging.io.amf.AmfMessageSerializer;
-import flex.messaging.io.amf.AmfTrace;
-import flex.messaging.io.amf.MessageHeader;
+import flex.messaging.io.amf.*;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 
 
 /**
  * AMF3 serialization, payload wrapped in ActionMessage
- * 
- * @author mbechler
  *
+ * @author mbechler
  */
 public class BlazeDSAMF3AM extends BlazeDSAMF3 {
 
@@ -50,7 +44,7 @@ public class BlazeDSAMF3AM extends BlazeDSAMF3 {
      * @see marshalsec.BlazeDSBase#marshal(java.lang.Object)
      */
     @Override
-    public byte[] marshal ( Object o ) throws Exception {
+    public byte[] marshal(Object o) throws Exception {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         SerializationContext sc = new SerializationContext();
         AmfMessageSerializer serializer = new AmfMessageSerializer();
@@ -68,7 +62,7 @@ public class BlazeDSAMF3AM extends BlazeDSAMF3 {
      * @see marshalsec.BlazeDSBase#unmarshal(byte[])
      */
     @Override
-    public Object unmarshal ( byte[] data ) throws Exception {
+    public Object unmarshal(byte[] data) throws Exception {
         SerializationContext sc = new SerializationContext();
         AmfMessageDeserializer deserializer = new AmfMessageDeserializer();
         deserializer.initialize(sc, new ByteArrayInputStream(data), new AmfTrace());
@@ -79,7 +73,7 @@ public class BlazeDSAMF3AM extends BlazeDSAMF3 {
     }
 
 
-    public static void main ( String[] args ) {
+    public static void main(String[] args) {
         new BlazeDSAMF3AM().run(args);
     }
 }

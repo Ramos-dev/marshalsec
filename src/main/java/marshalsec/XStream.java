@@ -23,29 +23,16 @@ SOFTWARE.
 package marshalsec;
 
 
-import java.util.Comparator;
+import marshalsec.gadgets.*;
 
-import marshalsec.gadgets.BindingEnumeration;
-import marshalsec.gadgets.CommonsBeanutils;
-import marshalsec.gadgets.CommonsConfiguration;
-import marshalsec.gadgets.ImageIO;
-import marshalsec.gadgets.JDKUtil;
-import marshalsec.gadgets.LazySearchEnumeration;
-import marshalsec.gadgets.Resin;
-import marshalsec.gadgets.Rome;
-import marshalsec.gadgets.ServiceLoader;
-import marshalsec.gadgets.SpringAbstractBeanFactoryPointcutAdvisor;
-import marshalsec.gadgets.SpringPartiallyComparableAdvisorHolder;
-import marshalsec.gadgets.XBean;
+import java.util.Comparator;
 
 
 /**
- * 
  * Not applicable:
  * - UnicastRefGadget,UnicastRemoteObjectGadget: don't think there is anything to gain here
- * 
- * @author mbechler
  *
+ * @author mbechler
  */
 public class XStream extends MarshallerBase<String> implements CommonsConfiguration, Rome, CommonsBeanutils, ServiceLoader, ImageIO,
         BindingEnumeration, LazySearchEnumeration, SpringAbstractBeanFactoryPointcutAdvisor, SpringPartiallyComparableAdvisorHolder, Resin, XBean {
@@ -56,7 +43,7 @@ public class XStream extends MarshallerBase<String> implements CommonsConfigurat
      * @see marshalsec.MarshallerBase#marshal(java.lang.Object)
      */
     @Override
-    public String marshal ( Object o ) throws Exception {
+    public String marshal(Object o) throws Exception {
         com.thoughtworks.xstream.XStream xs = new com.thoughtworks.xstream.XStream();
         return xs.toXML(o);
     }
@@ -68,7 +55,7 @@ public class XStream extends MarshallerBase<String> implements CommonsConfigurat
      * @see marshalsec.MarshallerBase#unmarshal(java.lang.Object)
      */
     @Override
-    public Object unmarshal ( String data ) throws Exception {
+    public Object unmarshal(String data) throws Exception {
         com.thoughtworks.xstream.XStream xs = new com.thoughtworks.xstream.XStream();
         return xs.fromXML(data);
     }
@@ -80,12 +67,12 @@ public class XStream extends MarshallerBase<String> implements CommonsConfigurat
      * @see marshalsec.UtilFactory#makeComparatorTrigger(java.lang.Object, java.util.Comparator)
      */
     @Override
-    public Object makeComparatorTrigger ( Object tgt, Comparator<?> cmp ) throws Exception {
+    public Object makeComparatorTrigger(Object tgt, Comparator<?> cmp) throws Exception {
         return JDKUtil.makePriorityQueue(tgt, cmp);
     }
 
 
-    public static void main ( String[] args ) {
+    public static void main(String[] args) {
         new XStream().run(args);
     }
 }

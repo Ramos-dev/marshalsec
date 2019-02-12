@@ -23,9 +23,6 @@ SOFTWARE.
 package marshalsec;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-
 import flex.messaging.io.SerializationContext;
 import flex.messaging.io.amf.AbstractAmfInput;
 import flex.messaging.io.amf.AbstractAmfOutput;
@@ -34,10 +31,12 @@ import flex.messaging.io.amf.MessageHeader;
 import flex.messaging.io.amfx.AmfxMessageDeserializer;
 import flex.messaging.io.amfx.AmfxMessageSerializer;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
 
 /**
  * @author mbechler
- *
  */
 public class BlazeDSAMFX extends BlazeDSExternalizableBase {
 
@@ -47,7 +46,7 @@ public class BlazeDSAMFX extends BlazeDSExternalizableBase {
      * @see marshalsec.MarshallerBase#marshal(java.lang.Object)
      */
     @Override
-    public byte[] marshal ( Object o ) throws Exception {
+    public byte[] marshal(Object o) throws Exception {
         SerializationContext sc = new SerializationContext();
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         AmfxMessageSerializer out = new AmfxMessageSerializer();
@@ -65,7 +64,7 @@ public class BlazeDSAMFX extends BlazeDSExternalizableBase {
      * @see marshalsec.MarshallerBase#unmarshal(java.lang.Object)
      */
     @Override
-    public Object unmarshal ( byte[] data ) throws Exception {
+    public Object unmarshal(byte[] data) throws Exception {
         SerializationContext sc = new SerializationContext();
         AmfxMessageDeserializer amfxMessageDeserializer = new AmfxMessageDeserializer();
         amfxMessageDeserializer.initialize(sc, new ByteArrayInputStream(data), null);
@@ -76,18 +75,18 @@ public class BlazeDSAMFX extends BlazeDSExternalizableBase {
 
 
     @Override
-    protected AbstractAmfOutput createOutput ( SerializationContext sc ) {
+    protected AbstractAmfOutput createOutput(SerializationContext sc) {
         return null;
     }
 
 
     @Override
-    protected AbstractAmfInput createInput ( SerializationContext sc ) {
+    protected AbstractAmfInput createInput(SerializationContext sc) {
         return null;
     }
 
 
-    public static void main ( String[] args ) {
+    public static void main(String[] args) {
         new BlazeDSAMFX().run(args);
     }
 

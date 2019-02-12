@@ -27,6 +27,7 @@ import java.io.FilePermission;
 import java.io.SerializablePermission;
 import java.lang.reflect.ReflectPermission;
 import java.net.NetPermission;
+import java.net.SocketPermission;
 import java.security.Permission;
 import java.security.SecurityPermission;
 import java.util.PropertyPermission;
@@ -35,7 +36,6 @@ import java.util.logging.LoggingPermission;
 
 /**
  * @author mbechler
- *
  */
 public class SideEffectSecurityManager extends SecurityManager {
 
@@ -45,35 +45,35 @@ public class SideEffectSecurityManager extends SecurityManager {
      * @see java.lang.SecurityManager#checkPermission(java.security.Permission)
      */
     @Override
-    public void checkPermission ( Permission perm ) {
-        if ( perm instanceof RuntimePermission ) {
-            if ( checkRuntimePermission((RuntimePermission) perm) ) {
+    public void checkPermission(Permission perm) {
+        if (perm instanceof RuntimePermission) {
+            if (checkRuntimePermission((RuntimePermission) perm)) {
                 return;
             }
-        }
-        else if ( perm instanceof ReflectPermission ) {
+        } else if (perm instanceof ReflectPermission) {
+            return;
+        } else if (perm instanceof LoggingPermission) {
+            return;
+        } else if (perm instanceof SecurityPermission) {
+            return;
+        } else if (perm instanceof PropertyPermission) {
+            return;
+        } else if (perm instanceof NetPermission && perm.getName().equals("specifyStreamHandler")) {
+            return;
+        }  else if (perm instanceof NetPermission && perm.getName().equals("specifyStreamHandler")) {
+            return;
+        } else if (perm instanceof FilePermission && perm.getActions().equals("read")) {
+            return;
+        } else if (perm instanceof NetPermission && perm.getName().equals("getProxySelector")) {
             return;
         }
-        else if ( perm instanceof LoggingPermission ) {
+        else if (perm instanceof SocketPermission && perm.getActions().equals("connect,resolve")) {
             return;
-        }
-        else if ( perm instanceof SecurityPermission ) {
-            return;
-        }
-        else if ( perm instanceof PropertyPermission ) {
-            return;
-        }
-        else if ( perm instanceof NetPermission && perm.getName().equals("specifyStreamHandler") ) {
-            return;
-        }
-        else if ( perm instanceof FilePermission && perm.getActions().equals("read") ) {
-            return;
-        }
-        else if ( perm instanceof SerializablePermission ) {
+        }else if (perm instanceof SerializablePermission) {
             return;
         }
 
-        super.checkPermission(perm);
+       // super.checkPermission(perm);
     }
 
 
@@ -83,37 +83,38 @@ public class SideEffectSecurityManager extends SecurityManager {
      * @see java.lang.SecurityManager#checkPropertyAccess(java.lang.String)
      */
     @Override
-    public void checkPropertyAccess ( String key ) {}
+    public void checkPropertyAccess(String key) {
+    }
 
 
     /**
      * @param perm
      */
-    private static boolean checkRuntimePermission ( RuntimePermission perm ) {
+    private static boolean checkRuntimePermission(RuntimePermission perm) {
 
-        if ( perm.getName().startsWith("accessClassInPackage.") ) {
+        if (perm.getName().startsWith("accessClassInPackage.")) {
             return true;
         }
 
-        switch ( perm.getName() ) {
-        case "setSecurityManager":
-            return true;
-        case "accessDeclaredMembers":
-            return true;
-        case "reflectionFactoryAccess":
-            return true;
-        case "createClassLoader":
-            return true;
-        case "getClassLoader":
-            return true;
-        case "setContextClassLoader":
-            return true;
-        case "shutdownHooks":
-            return true;
-        case "loadLibrary.net":
-            return true;
-        case "getProtectionDomain":
-            return true;
+        switch (perm.getName()) {
+            case "setSecurityManager":
+                return true;
+            case "accessDeclaredMembers":
+                return true;
+            case "reflectionFactoryAccess":
+                return true;
+            case "createClassLoader":
+                return true;
+            case "getClassLoader":
+                return true;
+            case "setContextClassLoader":
+                return true;
+            case "shutdownHooks":
+                return true;
+            case "loadLibrary.net":
+                return true;
+            case "getProtectionDomain":
+                return true;
         }
 
         return false;

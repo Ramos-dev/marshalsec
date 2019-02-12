@@ -23,17 +23,15 @@ SOFTWARE.
 package marshalsec;
 
 
-import org.apache.mina.core.buffer.IoBuffer;
-import org.red5.io.amf.Input;
-
 import flex.messaging.io.SerializationContext;
 import flex.messaging.io.amf.AbstractAmfOutput;
 import flex.messaging.io.amf.Amf3Output;
+import org.apache.mina.core.buffer.IoBuffer;
+import org.red5.io.amf.Input;
 
 
 /**
  * @author mbechler
- *
  */
 public class Red5AMF3 extends Red5AMFBase {
 
@@ -43,7 +41,7 @@ public class Red5AMF3 extends Red5AMFBase {
      * @see marshalsec.Red5AMFBase#createInput(org.apache.mina.core.buffer.IoBuffer)
      */
     @Override
-    protected Input createInput ( IoBuffer buf ) {
+    protected Input createInput(IoBuffer buf) {
         return new org.red5.io.amf3.Input(buf);
     }
 
@@ -54,12 +52,12 @@ public class Red5AMF3 extends Red5AMFBase {
      * @see marshalsec.BlazeDSBase#createOutput(flex.messaging.io.SerializationContext)
      */
     @Override
-    protected AbstractAmfOutput createOutput ( SerializationContext sc ) {
+    protected AbstractAmfOutput createOutput(SerializationContext sc) {
         return new Amf3Output(sc);
     }
 
 
-    public static void main ( String[] args ) {
+    public static void main(String[] args) {
         new Red5AMF3().run(args);
     }
 }

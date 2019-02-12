@@ -23,18 +23,16 @@ SOFTWARE.
 package marshalsec;
 
 
-import java.io.StringWriter;
-
 import com.esotericsoftware.yamlbeans.YamlConfig;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.esotericsoftware.yamlbeans.YamlWriter;
-
 import marshalsec.gadgets.C3P0WrapperConnPool;
+
+import java.io.StringWriter;
 
 
 /**
  * @author mbechler
- *
  */
 public class YAMLBeans extends YAMLBase implements C3P0WrapperConnPool {
 
@@ -44,7 +42,7 @@ public class YAMLBeans extends YAMLBase implements C3P0WrapperConnPool {
      * @see marshalsec.MarshallerBase#marshal(java.lang.Object)
      */
     @Override
-    public String marshal ( Object o ) throws Exception {
+    public String marshal(Object o) throws Exception {
         YamlConfig yc = new YamlConfig();
         StringWriter sw = new StringWriter();
         YamlWriter w = new YamlWriter(sw, yc);
@@ -59,7 +57,7 @@ public class YAMLBeans extends YAMLBase implements C3P0WrapperConnPool {
      * @see marshalsec.MarshallerBase#unmarshal(java.lang.Object)
      */
     @Override
-    public Object unmarshal ( String data ) throws Exception {
+    public Object unmarshal(String data) throws Exception {
         YamlConfig yc = new YamlConfig();
         YamlReader r = new YamlReader(data, yc);
         return r.read();
@@ -67,18 +65,18 @@ public class YAMLBeans extends YAMLBase implements C3P0WrapperConnPool {
 
 
     @Override
-    protected boolean constructorArgumentsSupported () {
+    protected boolean constructorArgumentsSupported() {
         return false;
     }
 
 
     @Override
-    protected String constructorPrefix ( boolean inline ) {
+    protected String constructorPrefix(boolean inline) {
         return "!";
     }
 
 
-    public static void main ( String[] args ) {
+    public static void main(String[] args) {
         new YAMLBeans().run(args);
     }
 }

@@ -23,16 +23,14 @@ SOFTWARE.
 package marshalsec;
 
 
-import org.ho.yaml.Yaml;
-
 import marshalsec.gadgets.C3P0RefDataSource;
 import marshalsec.gadgets.C3P0WrapperConnPool;
 import marshalsec.gadgets.JdbcRowSet;
+import org.ho.yaml.Yaml;
 
 
 /**
  * @author mbechler
- *
  */
 public class JYAML extends YAMLBase implements JdbcRowSet, C3P0RefDataSource, C3P0WrapperConnPool {
 
@@ -42,7 +40,7 @@ public class JYAML extends YAMLBase implements JdbcRowSet, C3P0RefDataSource, C3
      * @see marshalsec.MarshallerBase#marshal(java.lang.Object)
      */
     @Override
-    public String marshal ( Object o ) throws Exception {
+    public String marshal(Object o) throws Exception {
         return Yaml.dump(o);
     }
 
@@ -53,27 +51,27 @@ public class JYAML extends YAMLBase implements JdbcRowSet, C3P0RefDataSource, C3
      * @see marshalsec.MarshallerBase#unmarshal(java.lang.Object)
      */
     @Override
-    public Object unmarshal ( String data ) throws Exception {
+    public Object unmarshal(String data) throws Exception {
         return Yaml.loadType(data, Object.class);
     }
 
 
     @Override
-    protected boolean constructorArgumentsSupported () {
+    protected boolean constructorArgumentsSupported() {
         return false;
     }
 
 
     @Override
-    protected String constructorPrefix ( boolean inline ) {
-        if ( !inline ) {
+    protected String constructorPrefix(boolean inline) {
+        if (!inline) {
             return "foo: !";
         }
         return "!";
     }
 
 
-    public static void main ( String[] args ) {
+    public static void main(String[] args) {
         new JYAML().run(args);
     }
 }
