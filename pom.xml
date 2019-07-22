@@ -215,7 +215,7 @@
         <dependency>
             <groupId>com.mchange</groupId>
             <artifactId>c3p0</artifactId>
-            <version>0.9.5.2</version>
+            <version>0.9.5.3</version>
         </dependency>
 
         <!-- for the johnzon toString trigger -->
@@ -256,7 +256,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-plus</artifactId>
-            <version>9.4.8.v20171121</version>
+            <version>9.4.17.v20190418</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.alibaba.citrus/citrus-webx-all -->
