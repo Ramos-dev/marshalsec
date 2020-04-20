@@ -234,7 +234,7 @@
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>4.1.0</version>
+            <version>4.2.1</version>
         </dependency>
 
 
@@ -256,7 +256,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-plus</artifactId>
-            <version>9.4.8.v20171121</version>
+            <version>9.4.17.v20190418</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.alibaba.citrus/citrus-webx-all -->
