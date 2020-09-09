@@ -24,7 +24,7 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.9</version>
+            <version>0.9.12</version>
         </dependency>
 
         <dependency>
@@ -142,7 +142,7 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.17</version>
+            <version>1.26</version>
         </dependency>
 
         <dependency>
