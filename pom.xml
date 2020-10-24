@@ -256,7 +256,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-plus</artifactId>
-            <version>9.4.8.v20171121</version>
+            <version>9.4.33.v20201020</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.alibaba.citrus/citrus-webx-all -->
