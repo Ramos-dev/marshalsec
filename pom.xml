@@ -24,7 +24,7 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.9</version>
+            <version>0.9.12</version>
         </dependency>
 
         <dependency>
@@ -124,7 +124,7 @@
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
-            <version>1.4.9</version>
+            <version>1.4.15</version>
         </dependency>
 
         <dependency>
@@ -256,7 +256,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-plus</artifactId>
-            <version>9.4.8.v20171121</version>
+            <version>9.4.39.v20210325</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.alibaba.citrus/citrus-webx-all -->
